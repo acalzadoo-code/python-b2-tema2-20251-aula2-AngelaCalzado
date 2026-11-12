@@ -48,28 +48,42 @@ import typing as t
 
 
 def create_matrices() -> t.Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    # Write here your code
-    pass
+    # np.zeros recibe una tupla con las dimensiones de la matriz (filas, columnas)
+    zeros_matrix = np.zeros((3,3))
+    # np.ones hace lo mismo pero la crea con 1 en lugar de 0.
+    ones_matrix = np.ones((2,4))
+    # np.eye crea una matriz cuadrada con unos en la diagonal y ceros en el resto
+    identity_matrix = np.eye(4)
+    return zeros_matrix, ones_matrix, identity_matrix
 
 
 def manipulate_matrices(
     zeros_matrix: np.ndarray, ones_matrix: np.ndarray, identity_matrix: np.ndarray
 ) -> t.Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    # Write here your code
-    pass
+    # Para acceder a un elemento de la matriz usamos matriz[fila, columna]
+    # OJO que python empieza a contar las filas y columnas desde 0.
+    zeros_matrix[1, 1] = 5
+    # Para seleccionar una columna se utiliza matriz[:,columna]
+    ones_matrix[:,2] = 3
+    # matriz.shape te permite calcualar el tamaño de la matriz: .shape[0] nº de filas, .shape [1] nº de columnas
+    for fila in range(identity_matrix.shape[0]):
+        # Para acceder a la diagonal secundaria: columna = tamaño_matriz - 1 - fila
+        columna = identity_matrix.shape[0] - 1 - fila
+        identity_matrix[fila, columna] = 2 
+    return zeros_matrix, ones_matrix, identity_matrix
 
 
 # Para probar el código:
-# zeros_matrix, ones_matrix, identity_matrix = create_matrices()
-# print("Matriz de ceros creada:\n", zeros_matrix)
-# print("Matriz de unos creada:\n", ones_matrix)
-# print("Matriz identidad creada:\n", identity_matrix)
-# print("*" * 50)
-# zeros_matrix_modif, ones_matrix_modif, identity_matrix_modif = manipulate_matrices(
-#     zeros_matrix,
-#     ones_matrix,
-#     identity_matrix
-# )
-# print("Matriz de ceros modificada:\n", zeros_matrix_modif)
-# print("Matriz de unos modificada:\n", ones_matrix_modif)
-# print("Matriz identidad modificada:\n", identity_matrix_modif)
+zeros_matrix, ones_matrix, identity_matrix = create_matrices()
+print("Matriz de ceros creada:\n", zeros_matrix)
+print("Matriz de unos creada:\n", ones_matrix)
+print("Matriz identidad creada:\n", identity_matrix)
+print("*" * 50)
+zeros_matrix_modif, ones_matrix_modif, identity_matrix_modif = manipulate_matrices(
+    zeros_matrix,
+    ones_matrix,
+    identity_matrix
+)
+print("Matriz de ceros modificada:\n", zeros_matrix_modif)
+print("Matriz de unos modificada:\n", ones_matrix_modif)
+print("Matriz identidad modificada:\n", identity_matrix_modif)

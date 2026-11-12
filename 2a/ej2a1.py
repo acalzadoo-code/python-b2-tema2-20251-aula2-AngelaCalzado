@@ -24,10 +24,32 @@ import numpy as np
 
 
 def simulate_dice_rolls(number: int) -> dict:
-    # Write here your code
-    pass
+    frecuencias = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+    }
+    probabilidades = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+    }
+    for tirada in range(number):
+        # Genera un número aleatorio entre inicio (incluido) y fin (excluido)
+        resultado_tirada = np.random.randint(1,7)
+        frecuencias[resultado_tirada] += 1
+    for cara_dado in probabilidades:
+        probabilidades[cara_dado] = frecuencias[cara_dado] / number
+    return probabilidades
+    
 
 
 # Si quieres probar tu código, descomenta las siguientes líneas y ejecuta el script
-# num_rolls = 10000
-# print(simulate_dice_rolls(num_rolls))
+num_rolls = 10000
+print(simulate_dice_rolls(num_rolls))

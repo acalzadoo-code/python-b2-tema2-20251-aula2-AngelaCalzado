@@ -25,10 +25,18 @@ import typing as t
 def create_and_modify_meshgrid(
     start: int, end: int, step: int
 ) -> t.Tuple[np.ndarray, np.ndarray]:
-    # Write here your code
-    pass
+    # np.arange(start, end, step) empieza en start, acaba en end (excluido) y avanza según step
+    # OJO, que como empieza en 0, para que se incluya en end hay que sumar 1
+    x = np.arange(start, end + 1, step)
+    y = np.arange(start, end + 1, step)
+    # np.meshgrid() recibe los arrays x e y y genera dos matrices 
+    # que representan todas las combinaciones posibles de sus coordenadas.
+    X, Y = np.meshgrid(x, y)
+    # Modificar la fila 0 de la matriz X y reemplazarla por el valor 99.
+    X[0,:] = 99
+    return X, Y
 
 
 # Para probar tu código, puedes usar los siguientes parámetros:
-# X, Y = create_and_modify_meshgrid(-5, 5, 1)
-# print(X)
+X, Y = create_and_modify_meshgrid(-5, 5, 1)
+print(X)
