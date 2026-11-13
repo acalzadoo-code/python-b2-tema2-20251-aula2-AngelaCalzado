@@ -55,17 +55,62 @@ import typing as t
 def compare_monthly_sales(
     sales_year1: list, sales_year2: list, sales_year3: list, months: list
 ) -> t.Tuple[plt.Figure, plt.Axes, plt.Axes]:
-    # Write here your code
-    pass
+    # Primero creamos la figura y sus dos zonas independientes
+    # plt.subplots(filas, columnas)
+    # fig: figura completa, ax1: primer gráfico, ax2: segundo gráfico
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    
+    # Creamos un segundo eje Y sobre el primero para evitar aplastar por la escala
+    # ax1 gráfico de barras y eje Y izquierdo
+    # ax1_twin gráfico de líneas y eje Y derecho
+    # ax2 gráfico de pastel
+    ax1_twin = ax1.twinx()
+    
+    # ax1.bar(x, height), x: posiciones horizontales de las barras. height: altura de cada barra
+    ## Primero creamos las posiciones de los meses
+    x = np.arange(len(months))
+    ## El -0.2 y +0.2 es para separar las barras de cada año y que no se solapen en la misma posición
+    ### Para añadir una leyenda se usa label
+    ax1.bar(x - 0.2, sales_year1, label ="2020")
+    ax1.bar(x + 0.2, sales_year2, label ="2021")
+    
+    # Calculamos la suma acumulada de elementos de cada año
+    suma_year1 = np.cumsum(sales_year1)
+    suma_year2 = np.cumsum(sales_year2)
+    # ax1_twin.plot(x, y) x: posiciones de los meses, y_ valores que queremos representar
+    ax1_twin.plot(x, suma_year1, label ="2020")
+    ax1_twin.plot(x, suma_year2, label ="2021")
+    
+    # set_xticks() establece las posiciones y set_xticklabels() asigna los nombres
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(months)
+    # Para establecer el título ax1.set_title("...")
+    ax1.set_title("Monthly Sales Comparison: 2020 vs 2021")
+    # Para etiquetar los ejes:
+    ax1.set_xlabel("Meses")
+    ax1.set_ylabel("ventas mensuales")
+    ax1_twin.set_ylabel("ventas acumuladas")
+    
+    # Combinar las leyendas
+    handles1, labels1 = ax1.get_legend_handles_labels()
+    handles2, labels2 = ax1_twin.get_legend_handles_labels()
+    ax1.legend(handles1 + handles2, labels1 + labels2)
+    
+    # Creamos el gráfico de pastel, autopct muestra automáticamente los porcentajes (1 decimal y el símbolo %)
+    ax2.pie(sales_year3, labels=months, autopct="%1.1f%%")
+    # Ponemos el título
+    ax2.set_title("2022 Monthly Sales Distribution")
+    
+    return fig, ax1, ax2
 
 
 # Para probar el código, descomenta las siguientes líneas
-# sales_2020 = np.random.randint(100, 500, 12)
-# sales_2021 = np.random.randint(100, 500, 12)
-# sales_2022 = np.random.randint(100, 500, 12)
-# months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+sales_2020 = np.random.randint(100, 500, 12)
+sales_2021 = np.random.randint(100, 500, 12)
+sales_2022 = np.random.randint(100, 500, 12)
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
-# if __name__ == "__main__":
-#     fig, ax1, ax2 = compare_monthly_sales(sales_2020, sales_2021, sales_2022, months)
-#     plt.show()
+if __name__ == "__main__":
+    fig, ax1, ax2 = compare_monthly_sales(sales_2020, sales_2021, sales_2022, months)
+    plt.show()
