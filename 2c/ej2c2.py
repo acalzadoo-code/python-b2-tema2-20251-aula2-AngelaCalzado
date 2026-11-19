@@ -42,28 +42,64 @@ import numpy as np
 
 
 def read_csv_basic(file_path: str) -> pd.DataFrame:
-    # Write here your code
-    pass
+    df = pd.read_csv(file_path)
+    return df
 
 
 def custom_dataframe_describe(df: pd.DataFrame) -> pd.DataFrame:
-    # Write here your code
-    pass
+    # Seleccionamos únicamente las columnas numéricas del DataFrame,
+    # ya que las estadísticas como la media o la desviación estándar
+    # no pueden calcularse sobre columnas de texto.
+    # select_dtypes permite seleccionar columnas según su tipo de dato
+    # include="number" indica que queremos conservar únicamente las columnas numéricas
+    df = df.select_dtypes(include="number")
+    
+    # Calculamos las estadísticas descriptivas de cada columna
+    media = df.mean()
+    mediana = df.median()
+    ds = df.std()
+    minimum = df.min()
+    maximum = df.max()
+    cuartiles = df.quantile([0.25, 0.50, 0.75])
+    
+    # Concatenamos las estadísticas verticalmente para formar el DataFrame
+    df_resultado = pd.concat(
+        [
+            # Convertimos cada una de las estadísticas (series) en un DataFrame mediante to_frame()
+            # y utilizamos .T para transponerlo, de forma que cada estadística
+            # quede representada en una fila y las asignaturas en columnas.
+            # Después, rename() cambia el índice 0 por el nombre de la estadística.
+            media.to_frame().T.rename(index={0:"mean"}),
+            mediana.to_frame().T.rename(index={0: "median"}),
+            ds.to_frame().T.rename(index={0: "std"}),
+            minimum.to_frame().T.rename(index={0: "min"}),
+            # Añadimos directamente el DataFrame de los cuartiles,
+            # ya que contiene tres filas correspondientes a 0.25, 0.50 y 0.75.
+            cuartiles,
+            maximum.to_frame().T.rename(index={0: "max"})
+        ],
+        # axis=0 indica que los DataFrames se concatenan verticalmente,
+        # es decir, uno debajo de otro, manteniendo las asignaturas como columnas.
+        axis = 0
+    )
+    
+    # Devolvemos el DataFrame con todas las estadísticas descriptivas.
+    return df_resultado
 
 
 def pandas_dataframe_describe(df: pd.DataFrame) -> pd.DataFrame:
-    # Write here your code
-    pass
+    # Aplicamos describe() para calcular las estadísticas descriptivas del DataFrame
+    return df.describe()
 
 
 # Para probar el código, descomenta las siguientes líneas
-# if __name__ == "__main__":
-#     current_dir = Path(__file__).parent
-#     FILE_PATH = current_dir / "data/grades.csv"
-#     dataframe = read_csv_basic(FILE_PATH)
+if __name__ == "__main__":
+    current_dir = Path(__file__).parent
+    FILE_PATH = current_dir / "data/grades.csv"
+    dataframe = read_csv_basic(FILE_PATH)
 
-#     print("Custom Describe of the DataFrame:")
-#     print(custom_dataframe_describe(dataframe), end="\n\n")
+    print("Custom Describe of the DataFrame:")
+    print(custom_dataframe_describe(dataframe), end="\n\n")
 
-#     print("Pandas Describe of the DataFrame:")
-#     print(pandas_dataframe_describe(dataframe))
+    print("Pandas Describe of the DataFrame:")
+    print(pandas_dataframe_describe(dataframe))
