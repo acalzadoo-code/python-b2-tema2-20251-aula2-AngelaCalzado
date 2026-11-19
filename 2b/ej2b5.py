@@ -44,28 +44,61 @@ Salida esperada:
 
 import pandas as pd
 import typing as t
+import requests
+from io import StringIO
 
 
 def read_population_data(url: str, match_text: str = None) -> t.List[pd.DataFrame]:
-    # Write here your code
-    pass
+    # Definimos una cabecera User-Agent para identificarnos como un navegador web
+    # y evitar que Wikipedia bloquee la petición HTTP realizada desde Python.
+    headers = {"User-Agent": "Mozilla/5.0"}
+    
+    # Descargamos el contenido HTML de la página mediante requests.
+    # Utilizamos requests en lugar de pasar directamente la URL a pd.read_html()
+    # porque Wikipedia puede bloquear las peticiones directas de Pandas con un error 403.
+    response = requests.get(url, headers=headers)
+    
+    # StringIO convierte el contenido HTML descargado en un objeto similar a un archivo,
+    # que puede ser interpretado por pd.read_html().
+    # Usamos response.text en lugar de url porque ya hemos descargado el HTML
+    # y queremos analizar ese contenido, no realizar una nueva petición a la página.
+    if match_text is None:
+        # Si no se proporciona un texto de búsqueda, leemos todas las tablas
+        # que tengan la clase HTML "wikitable".
+        tables = pd.read_html(StringIO(response.text), attrs={"class": "wikitable"}, na_values=["-", "None"])
+    else:
+        # Si se proporciona match_text, filtramos las tablas para obtener
+        # únicamente aquellas que contienen el texto indicado.
+        tables = pd.read_html(StringIO(response.text), attrs={"class": "wikitable"}, match=match_text, na_values=["-", "None"])
+    
+    # Devuelve la lista de dataframes
+    return tables
 
 
 def get_table_by_string_match(
     tables: t.List[pd.DataFrame], match_text: str
 ) -> t.Union[pd.DataFrame, None]:
-    # Write here your code
-    pass
+    # Recorre uno a uno los df de la lista
+    for table in tables:
+        # Convierte el contenido del df en una cadena de texto
+        table_string= table.to_string()
+        # Comprueba si el texto buscado aparece dentro de esa cadena
+        if match_text in table_string:
+            # Devuelve el primer df que contiene el texto y termina la función
+            return table
+    # Si no hay coincidencias devuelve none
+    return None
 
 
 def count_tables(tables: t.List[pd.DataFrame]) -> int:
-    # Write here your code
-    pass
+    # Contamos el número de df que hay en la lista
+    count = len(tables)
+    return count
 
 
 # Para probar el código, descomenta las siguientes líneas
 # url = "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population"
-# tables = read_population_data(url)
+# tables = read_population_)data(url)
 # print(f"Número de tablas en la página: {count_tables(tables)}")
 # selected_table = get_table_by_string_match(tables, "Spain")
 
