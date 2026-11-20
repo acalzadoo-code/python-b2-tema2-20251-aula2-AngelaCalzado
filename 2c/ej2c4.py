@@ -34,29 +34,44 @@ import pandas as pd
 
 
 def group_and_aggregate(df, group_columns, agg_dict):
-    # Write here your code
-    pass
+    # Agrupamos el DataFrame según las columnas indicadas y aplicamos
+    # las funciones de agregación especificadas para cada columna.
+    #.agg(agg_dict) aplica las operaciones estadísticas indicadas en el diccionario
+    df_groupby = df.groupby(group_columns).agg(agg_dict)
+    return df_groupby
 
 def standardize_column_by_group(df, group_columns, column_to_standardize):
-    # Write here your code
-    pass
+    # Agrupamos el DataFrame según las columnas indicadas en group_columns
+    # y seleccionamos la columna que queremos estandarizar.
+    # A continuación, utilizamos transform para calcular la media y std
+    # de dicha columna dentro de cada grupo. El resultado es una Serie
+    # con el mismo número de filas que el DataFrame original, donde cada
+    # fila contiene la media y std correspondiente a su grupo.
+    df_mean = df.groupby(group_columns)[column_to_standardize].transform("mean")
+    df_std = df.groupby(group_columns)[column_to_standardize].transform("std")
+    
+    # Calculamos el Z-score y añadimos los resultados como una nueva columna.
+    # El z-score es (valor original - media)/desviación estándar
+    df[f"{column_to_standardize}_Standardized"] = (df[column_to_standardize] - df_mean) / df_std
+    
+    return df
 
 
 # Para probar el código, descomenta las siguientes líneas y asegúrate de que el path al archivo sea correcto
-# if __name__ == "__main__":
-#     current_dir = Path(__file__).parent
-#     FILE_PATH = current_dir / "data/products.csv"
-#     df = pd.read_csv(FILE_PATH)
-#     group_columns = ["Category", "Brand"]
-#     agg_dict = {"Price": ["min", "max", "sum"], "Rating": ["mean"]}
+if __name__ == "__main__":
+    current_dir = Path(__file__).parent
+    FILE_PATH = current_dir / "data/products.csv"
+    df = pd.read_csv(FILE_PATH)
+    group_columns = ["Category", "Brand"]
+    agg_dict = {"Price": ["min", "max", "sum"], "Rating": ["mean"]}
 
-#     aggregated_df = group_and_aggregate(df, group_columns, agg_dict)
-#     print(aggregated_df)
+    aggregated_df = group_and_aggregate(df, group_columns, agg_dict)
+    print(aggregated_df)
 
-#     group_columns = ["Category", "Brand"]
-#     column_to_standardize = "Rating"
+    group_columns = ["Category", "Brand"]
+    column_to_standardize = "Rating"
 
-#     df_standardized = standardize_column_by_group(
-#         df, group_columns, column_to_standardize
-#     )
-#     print(df_standardized.head())
+    df_standardized = standardize_column_by_group(
+        df, group_columns, column_to_standardize
+    )
+    print(df_standardized.head())

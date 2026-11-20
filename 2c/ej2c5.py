@@ -47,38 +47,70 @@ import numpy as np
 
 
 def read_csv(filepath):
-    # Write here your code
-    pass
+    return pd.read_csv(filepath)
 
 
 def clean_dataframe(df):
-    # Write here your code
-    pass
+    # .replace busca los valores indicados (Null, -, NA, na) en el DataFrame
+    # y los sustituye por NaN (np.nan)
+    df_replace = df.replace(['Null', '-', 'NA', 'na', '   '], np.nan)
+    
+    # Convertimos todas las columnas excepto la primera a numéricas
+    for columna in df_replace.columns[1:]:
+        # df_replace[columna] seleccionamos dónde queremos guardar el resultado
+        # pd.to_numeric(df_replace[columna]) convierte los valores de esa columna
+        df_replace[columna] = pd.to_numeric(df_replace[columna])
+        
+    return df_replace
 
 
 def dropna_specific_row_in_column(df, column_name):
-    # Write here your code
-    pass
+    # df.dropna() elimina las filas que contienen valores ausentes (NaN).
+    # El parámetro subset permite especificar en qué columna o columnas
+    # queremos comprobar si existen valores ausentes.
+    # [column_name] convierte el nombre de la columna en una lista,
+    # que es el formato que espera el parámetro subset.
+    # De esta manera, solo se eliminan las filas que tienen NaN
+    # en la columna indicada, aunque existan NaN en otras columnas.
+    df_dropna = df.dropna(subset=[column_name])
+    return df_dropna
 
 
 def fillna_method(df, column_name, fill_method="ffill", fill_value=None, limit=1):
     # Write here your code
-    pass
-
+    if fill_method == "ffill":
+        # ffill() rellena los valores NaN utilizando el último valor válido
+        # encontrado anteriormente en la columna.
+        # limit establece el número máximo de valores NaN consecutivos
+        # que se pueden rellena
+        df[column_name] = df[column_name].ffill(limit=limit)
+        
+    elif fill_method == "mean":
+        # Comprobamos si el usuario ha proporcionado un valor de relleno.
+        if fill_value is not None:
+            # Si existe un valor manual, lo utilizamos para sustituir
+            # todos los valores NaN de la columna.
+            df[column_name] = df[column_name].fillna(value=fill_value)
+        else:
+            # Si no se proporciona un valor manual, calculamos la media
+            # de la columna y la utilizamos para sustituir los valores NaN.
+            df[column_name] = df[column_name].fillna(value=df[column_name].mean())
+    
+    return df
 
 # Para probar el código, descomenta las siguientes líneas y asegúrate de que el path al archivo sea correcto
-# if __name__ == "__main__":
-#     current_dir = Path(__file__).parent
-#     FILE_PATH = current_dir / "data/grades_na.csv"
-#     dataframe = read_csv(FILE_PATH)
-#     df_cleaned = clean_dataframe(dataframe)
-#     df_drop_na_rows = dropna_specific_row_in_column(df_cleaned, "Name")
-#     df_filled_column_ffill = fillna_method(
-#         df_drop_na_rows, "Hindi", fill_method="ffill", limit=1
-#     )
-#     df_filled_column_mean = fillna_method(
-#         df_filled_column_ffill, "Maths", fill_method="mean"
-#     )
+if __name__ == "__main__":
+    current_dir = Path(__file__).parent
+    FILE_PATH = current_dir / "data/grades_na.csv"
+    dataframe = read_csv(FILE_PATH)
+    df_cleaned = clean_dataframe(dataframe)
+    df_drop_na_rows = dropna_specific_row_in_column(df_cleaned, "Name")
+    df_filled_column_ffill = fillna_method(
+        df_drop_na_rows, "Hindi", fill_method="ffill", limit=1
+    )
+    df_filled_column_mean = fillna_method(
+        df_filled_column_ffill, "Maths", fill_method="mean"
+    )
 
-#     print(dataframe.head())
-#     print(df_filled_column_mean.head())
+    print(dataframe.head())
+    print(df_filled_column_mean.head())

@@ -48,57 +48,73 @@ import pandas as pd
 
 
 def read_csv_basic(file_path):
-    # Write here your code
-    pass
+    df = pd.read_csv(file_path)
+    return df
 
 
 def stack_dataframe(df):
-    # Write here your code
-    pass
+    # desplaza las columnas al índice, creando una estructura jerárquica (MultiIndex).
+    df_stack = df.stack()
+    return df_stack
 
 
 def unstack_dataframe(df_stacked):
-    # Write here your code
-    pass
+    # transforma uno de los niveles del índice jerárquico en columnas.
+    df_unstacked = df_stacked.unstack()
+    return df_unstacked
 
 
 def pivot_dataframe(df):
-    # Write here your code
-    pass
+    # df.pivot(index = columna que identifica las filas, 
+    # columns = columna cuyos valores se convertirán en nuevas columnas, 
+    # values = columna que contiene los datos que queremos mostrar)
+    df_pivot = df.pivot(index = "Product ID", columns = "Category", values = "Price")
+    return df_pivot
 
 
 def melt_dataframe(df):
-    # Write here your code
-    pass
+    # Transformamos el DataFrame de formato ancho (wide) a formato largo (long).
+    # id_vars: indica las columnas que queremos mantener como identificadores.
+    # value_vars: indica las columnas cuyos valores queremos convertir en filas.
+    # Por defecto, pandas crea dos columnas: "variable" (nombre de la columna original)
+    # y "value" (valor correspondiente).
+    df_melt = df.melt(id_vars = ["Product ID"], 
+                    value_vars = ["Product Name", "Brand", "Category", "Price", "Rating", "Color", "Size"])
+    return df_melt
 
 
 def transpose_dataframe(df):
-    # Write here your code
-    pass
+    # Transponemos el DataFrame, intercambiando las filas por las columnas.
+    # .T es una propiedad de pandas equivalente al método .transpose().
+    df_transpose = df.T
+    return df_transpose
 
 
 def show_dataframe(nombre, df):
-    # Write here your code
-    pass
+    # Mostramos el nombre de la transformación aplicada.
+    print(f"Transformación: {nombre}")
+    # Mostramos las cinco primeras filas del DataFrame.
+    print(df.head())
+
 
 
 # # Para probar el código, descomenta las siguientes líneas
-# if __name__ == "__main__":
-#     current_dir = Path(__file__).parent
-#     FILE_PATH = current_dir / "data/products.csv"
-#     df = read_csv_basic(FILE_PATH)
+if __name__ == "__main__":
+    current_dir = Path(__file__).parent
+    FILE_PATH = current_dir / "data/products.csv"
+    df = read_csv_basic(FILE_PATH)
 
-#     df_stacked = stack_dataframe(df)
-#     show_dataframe("Stack", df_stacked)
+    df_stacked = stack_dataframe(df)
+    show_dataframe("Stack", df_stacked)
 
-#     df_unstacked = unstack_dataframe(df_stacked)
-#     show_dataframe("Unstack", df_unstacked)
+    df_unstacked = unstack_dataframe(df_stacked)
+    show_dataframe("Unstack", df_unstacked)
 
-#     df_pivoted = pivot_dataframe(df)
-#     show_dataframe("Pivot", df_pivoted)
+    df_pivoted = pivot_dataframe(df)
+    show_dataframe("Pivot", df_pivoted)
 
-#     df_melted = melt_dataframe(df)
-#     show_dataframe("Melt", df_melted)
+    df_melted = melt_dataframe(df)
+    show_dataframe("Melt", df_melted)
 
-#     df_transposed = transpose_dataframe(df)
-#     show_dataframe("Transpose", df_transposed)
+    df_transposed = transpose_dataframe(df)
+    show_dataframe("Transpose", df_transposed)
