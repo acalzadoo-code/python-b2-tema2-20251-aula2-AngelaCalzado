@@ -36,33 +36,66 @@ from scipy import stats
 
 
 def calculate_mean(file_path: str) -> float:
-    # Write here your code
-    pass
+    # Leemos la base de datos y la guardamos en una variable
+    df = pd.read_csv(file_path)
+    # Accedemos a la columna calificaciones del df (en este caso la única que hay)
+    calificaciones = df["Calificaciones"]
+    # Calculamos la media utilizando stats.tmean(columna_df)
+    media = stats.tmean(calificaciones)
+    return media
 
 
-def calculate_mean(file_path: str) -> float:
-    # Write here your code
-    pass
+def calculate_variance(file_path: str) -> float:
+    # Leemos la base de datos y la guardamos en una variable
+    df = pd.read_csv(file_path)
+    # Accedemos a la columna calificaciones del df (en este caso la única que hay)
+    calificaciones = df["Calificaciones"]
+    # Calculamos la varianza utilizando stats.tvar(columna_df)
+    # stats.tvar() calcula la varianza muestral por defecto (ddof=1)
+    # Para calcular la varianza poblacional habría que poner ddof=0.
+    varianza = stats.tvar(calificaciones)
+    return varianza
 
 
 def calculate_skewness(file_path: str) -> float:
-    # Write here your code
-    pass
+    # La asimetría nos indica si una distribución está equilibrada 
+    # o si presenta una cola más larga hacia alguno de sus extremos.
+    # Leemos la base de datos y la guardamos en una variable
+    df = pd.read_csv(file_path)
+    # Accedemos a la columna calificaciones del df (en este caso la única que hay)
+    calificaciones = df["Calificaciones"]
+    # Calculamos la asimetría utilizando stats.skew(columna_df)
+    # Por defecto bias = True, que calcula la asimetría sin corregir el sesgo estadístico.
+    # Si pusiéramos false aplica una corrección para obtener una estimación insesgada de la asimetría poblacional
+    asimetria = stats.skew(calificaciones)
+    return asimetria
 
 
 def calculate_kurtosis(file_path: str) -> float:
-    # Write here your code
-    pass
-
+    # La curtosis es una medida relacionada con la forma de la distribución y, 
+    # tradicionalmente, se explica en términos de su apuntamiento.
+    # Leptocúrtica: curtosis positiva (exceso de curtosis).
+    # Mesocúrtica: curtosis igual a cero (distribución normal de referencia).
+    # Platicúrtica: curtosis negativa (exceso de curtosis).
+    
+    # Leemos la base de datos y la guardamos en una variable
+    df = pd.read_csv(file_path)
+    # Accedemos a la columna calificaciones del df (en este caso la única que hay)
+    calificaciones = df["Calificaciones"]
+    # Calculamos la curtosis utilizando stats.kurtosis(columna_df)
+    # Por defecto fisher = True, devuelve el exceso de curtosis
+    # Si pusiéramos False devuelve la curtosis de Pearson
+    curtosis = stats.kurtosis(calificaciones)
+    return curtosis
 
 # Para probar el código, descomenta las siguientes líneas
-# if __name__ == "__main__":
-#     current_dir = Path(__file__).parent
-#     FILE_PATH = current_dir / 'data/calificaciones.csv'
-#     mean = calculate_mean(FILE_PATH)
-#     variance = calculate_variance(FILE_PATH)
-#     skewness = calculate_skewness(FILE_PATH)
-#     kurtosis = calculate_kurtosis(FILE_PATH)
+if __name__ == "__main__":
+    current_dir = Path(__file__).parent
+    FILE_PATH = current_dir / 'data/calificaciones.csv'
+    mean = calculate_mean(FILE_PATH)
+    variance = calculate_variance(FILE_PATH)
+    skewness = calculate_skewness(FILE_PATH)
+    kurtosis = calculate_kurtosis(FILE_PATH)
 
-#     # Mostrar los resultados calculados
-#     print(f'Media: {mean}, Varianza: {variance}, Asimetría: {skewness}, Curtosis: {kurtosis}')
+    # Mostrar los resultados calculados
+    print(f'Media: {mean}, Varianza: {variance}, Asimetría: {skewness}, Curtosis: {kurtosis}')
