@@ -39,8 +39,22 @@ import matplotlib.pyplot as plt
 def perform_linear_regression(
     data: pd.DataFrame, variable_1: str, variable_2: str
 ) -> Tuple[float, float, float, float, float]:
-    # Write here your code
-    pass
+    # 1. Seleccionar las dos columnas del DataFrame
+    df_variable_1 = data[variable_1]
+    df_variable_2 = data[variable_2]
+    
+    # 2. Realizar la regresión lineal con linregress()
+    res = linregress(df_variable_1, df_variable_2)
+    
+    # 3. Recuperar los cinco resultados
+    pendiente = res.slope
+    intercepcion = res.intercept
+    coeficiente_correlacion = res.rvalue
+    pvalor = res.pvalue
+    error_estandar = res.stderr
+    
+    # 4. Devolver los resultados en el orden solicitado
+    return pendiente, intercepcion, coeficiente_correlacion, pvalor, error_estandar
 
 
 def plot_regression_line(
@@ -51,23 +65,55 @@ def plot_regression_line(
     intercept: float,
     return_fig_ax_test=False,
 ):
-    # Write here your code
-    pass
+    # 1. Recuperar las dos variables
+    df_variable1 = data[variable_1]
+    df_variable2 = data[variable_2]
+
+    # 2. Crear figura y ejes
+    fig, ax = plt.subplots()
+    
+    # 2.1. Representar los puntos con plt.scatter()
+    # x representa RM e y representa MEDV.
+    ax.scatter(df_variable1, df_variable2)
+
+    # 2.2. Generar los valores X con np.linspace(inicio, final, num)
+    valores_x = np.linspace(df_variable1.min(), df_variable1.max(), 1000)
+
+    # 2.3. Calcular los valores Y utilizando la ecuación de la recta
+    valores_y = slope * valores_x + intercept
+    
+    # 2.4. Representar la regresión lineal
+    ax.plot(valores_x, valores_y)
+    ax.set_title("Linear Regression between RM and MEDV")
+    ax.set_xlabel(variable_1)
+    ax.set_ylabel(variable_2)
+    
+    # Comprobamos si NO estamos ejecutando los tests.
+    # Si return_fig_ax_test es False, mostramos el gráfico en pantalla
+    # mediante plt.show().
+    if not return_fig_ax_test:
+        plt.show()
+
+    # Devolvemos siempre los objetos fig y ax, independientemente de si
+    # hemos mostrado el gráfico o no.
+    # Esto permite acceder posteriormente a la figura y a sus ejes,
+    # además de facilitar su comprobación mediante los tests.
+    return fig, ax
 
 
 # Para probar el código, descomenta este código
-# if __name__ == '__main__':
-#     current_dir = Path(__file__).parent
-#     HOUSING_CSV_PATH = current_dir / 'data/housing.csv'
-#     variable_1 = 'RM'
-#     variable_2 = 'MEDV'
-#     data = pd.read_csv(HOUSING_CSV_PATH, skiprows=14)
+if __name__ == '__main__':
+    current_dir = Path(__file__).parent
+    HOUSING_CSV_PATH = current_dir / 'data/housing.csv'
+    variable_1 = 'RM'
+    variable_2 = 'MEDV'
+    data = pd.read_csv(HOUSING_CSV_PATH, skiprows=14)
 
-#     slope, intercept, r_value, p_value, std_err = perform_linear_regression(data, variable_1, variable_2)
+    slope, intercept, r_value, p_value, std_err = perform_linear_regression(data, variable_1, variable_2)
 
-#     print(f'Análisis de Regresión Lineal entre {variable_1} y {variable_2}:')
-#     print(f'Pendiente: {slope}, Intersección: {intercept}, Valor r: {r_value}, Valor p: {p_value},'
-#         f'Error estándar: {std_err}')
+    print(f'Análisis de Regresión Lineal entre {variable_1} y {variable_2}:')
+    print(f'Pendiente: {slope}, Intersección: {intercept}, Valor r: {r_value}, Valor p: {p_value},'
+        f'Error estándar: {std_err}')
 
-#     # Graficar la línea de regresión
-#     fig, ax = plot_regression_line(data, variable_1, variable_2, slope, intercept, return_fig_ax_test=False)
+    # Graficar la línea de regresión
+    fig, ax = plot_regression_line(data, variable_1, variable_2, slope, intercept, return_fig_ax_test=False)
