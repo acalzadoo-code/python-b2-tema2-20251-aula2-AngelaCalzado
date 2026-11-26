@@ -35,25 +35,47 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 
 def prepare_data_for_regression(file_path: str) -> Tuple:
-    # Write here your code
-    pass
+    # Leer el csv y saltar las primeras 14 filas
+    df = pd.read_csv(file_path, skiprows=14)
+    
+    # Separar las variables predictoras (X) de la variable objetivo (y).
+    variable_X = df.drop(columns=["MEDV"])
+    variable_Y = df["MEDV"]
+    
+    # Dividir los datos en entrenamiento (80 %) y prueba (20 %). Devuelve:
+    # X_train: características para entrenar
+    # X_test: características para probar
+    # y_train: valores reales para entrenar
+    # y_test: valores reales para probar
+    return train_test_split(variable_X, variable_Y, test_size=0.2, random_state=80)
 
 
 def perform_random_forest_regression(X_train, y_train) -> RandomForestRegressor:
-    # Write here your code
-    pass
+    # Crear el modelo
+    modelo = RandomForestRegressor()
+    
+    # Entrenar el modelo
+    return modelo.fit(X_train, y_train)
 
 
 def evaluate_regression_model(model, X_test, y_test) -> Tuple[float, float]:
-    # Write here your code
-    pass
+    # Obtener las predicciones
+    y_pred = model.predict(X_test)
+    
+    # Calcular R2: r2_score(y_test, y_pred)
+    r2_res = r2_score(y_test, y_pred)
+    
+    # Calcular RMSE (raíz cuadrada de mean squeared error)
+    RMSE_res = np.sqrt(mean_squared_error(y_test, y_pred))
+    
+    return r2_res, RMSE_res
 
 
 # Para probar el código, debes descomentar las siguientes líneas:
-# if __name__ == '__main__':
-#     current_dir = Path(__file__).parent
-#     file_path = current_dir / 'data/housing.csv'
-#     X_train, X_test, y_train, y_test = prepare_data_for_regression(file_path)
-#     model = perform_random_forest_regression(X_train, y_train)
-#     r_squared, rmse = evaluate_regression_model(model, X_test, y_test)
-#     print(f'R^2 del modelo: {r_squared}, RMSE: {rmse}')
+if __name__ == '__main__':
+    current_dir = Path(__file__).parent
+    file_path = current_dir / 'data/housing.csv'
+    X_train, X_test, y_train, y_test = prepare_data_for_regression(file_path)
+    model = perform_random_forest_regression(X_train, y_train)
+    r_squared, rmse = evaluate_regression_model(model, X_test, y_test)
+    print(f'R^2 del modelo: {r_squared}, RMSE: {rmse}')
